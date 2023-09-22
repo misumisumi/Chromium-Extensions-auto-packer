@@ -29,23 +29,44 @@ jobs:
           REPO_OTD=dimdenGD/OldTweetDeck
           REPO_BTD=dimdenGD/BetterTweetDeck
 
-          cat <<EOF >updates.xml
+          cat <<EOF >OldTweetDeck/updates.xml
           <?xml version='1.0' encoding='UTF-8'?>
           <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
             <app appid='jjeniamblhljemiaglpcedjpgebcflpp'>
               <updatecheck codebase='https://github.com/misumisumi/OldTweetDeck-auto-update/releases/download/latest/OldTweetDeck_${{ steps.latest-ver.outputs.otd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.otd_ver }}' status='ok' />
             </app>
+          </gupdate>
+          EOF
+
+          cat <<EOF >BetterTweetDeckOTD/updates.xml
+          <?xml version='1.0' encoding='UTF-8'?>
+          <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
             <app appid='eeklgagcfgdmdppknipogbobjkdkcbhh'>
               <updatecheck codebase='https://github.com/misumisumi/OldTweetDeck-auto-update/releases/download/latest/BetterTweetDeck_${{ steps.latest-ver.outputs.btd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.btd_ver }}' status='ok' />
             </app>
           </gupdate>
           EOF
 
+      - name: Update README.md
+        run: |
+          cat <<EOF >README.md
+          # Chromium extensions auto packer
+
+          Automatic generation of 'crx file' and 'updates.xml' of chromium extensions.
+
+          Automatically keep up with the latest version.
+
+          ## Available Extensions
+
+          - [OldTweetDeck](https://github.com/dimdenGD/OldTweetDeck)-${{ steps.latest-ver.outputs.btd_ver }}
+          - [BetterTweetDeck (OldTweetDeck-compatible)](https://github.com/dimdenGD/BetterTweetDeck/)-${{ steps.latest-ver.outputs.btd_ver }}
+          EOF
+
       - name: Commit updates.xml
         id: commit
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          file_pattern: "updates.xml"
+          file_pattern: "*/updates.xml README.md"
 
   pack-and-push-release:
     runs-on: ubuntu-latest
