@@ -2,7 +2,7 @@ name: Auto pack extensions and Publish release
 on:
   workflow_dispatch: # allows manual triggering
   schedule:
-    - cron: "0 0 * * 0" # runs weekly on Sunday at 00:00
+    - cron: "0 * * * *" # Runs every day at 00:00
 
 jobs:
   update-xml:
@@ -32,8 +32,8 @@ jobs:
           cat <<EOF >OldTweetDeck/updates.xml
           <?xml version='1.0' encoding='UTF-8'?>
           <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-            <app appid='jjeniamblhljemiaglpcedjpgebcflpp'>
-              <updatecheck codebase='https://github.com/misumisumi/OldTweetDeck-auto-update/releases/download/latest/OldTweetDeck_${{ steps.latest-ver.outputs.otd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.otd_ver }}' status='ok' />
+            <app appid='ilpagdghakcfnlaanggbgjbmdflagajb'>
+              <updatecheck codebase='https://github.com/misumisumi/Chromium-Extensions-auto-packer/releases/latest/download/OldTweetDeck_${{ steps.latest-ver.outputs.otd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.otd_ver }}' status='ok' />
             </app>
           </gupdate>
           EOF
@@ -41,8 +41,8 @@ jobs:
           cat <<EOF >BetterTweetDeckOTD/updates.xml
           <?xml version='1.0' encoding='UTF-8'?>
           <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-            <app appid='eeklgagcfgdmdppknipogbobjkdkcbhh'>
-              <updatecheck codebase='https://github.com/misumisumi/OldTweetDeck-auto-update/releases/download/latest/BetterTweetDeck_${{ steps.latest-ver.outputs.btd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.btd_ver }}' status='ok' />
+            <app appid='mbkealjjbgdefaeolfjpmohgkbejfnli'>
+              <updatecheck codebase='https://github.com/misumisumi/Chromium-Extensions-auto-packer/releases/latest/download/BetterTweetDeck_${{ steps.latest-ver.outputs.btd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.btd_ver }}' status='ok' />
             </app>
           </gupdate>
           EOF
@@ -62,7 +62,7 @@ jobs:
           - [BetterTweetDeck (OldTweetDeck-compatible)](https://github.com/dimdenGD/BetterTweetDeck/)-${{ steps.latest-ver.outputs.btd_ver }}
           EOF
 
-      - name: Commit updates.xml
+      - name: Commit
         id: commit
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -87,6 +87,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: "minor"
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
