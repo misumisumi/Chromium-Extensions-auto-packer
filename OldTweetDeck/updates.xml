@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+  <app appid='jjeniamblhljemiaglpcedjpgebcflpp'>
+    <updatecheck codebase='https://github.com/misumisumi/OldTweetDeck-auto-update/releases/download/latest/OldTweetDeck_3.1.7_Chromium.crx' version='3.1.7' status='ok' />
+  </app>
+</gupdate>
