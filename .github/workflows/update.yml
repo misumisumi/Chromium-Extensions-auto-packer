@@ -1,0 +1,76 @@
+name: Auto pack extensions and Publish release
+on:
+  workflow_dispatch: # allows manual triggering
+  schedule:
+    - cron: "0 0 * * 0" # runs weekly on Sunday at 00:00
+
+jobs:
+  update-xml:
+    runs-on: ubuntu-latest
+    outputs:
+      otd_ver: ${{ steps.latest-ver.outputs.otd_ver }}
+      btd_ver: ${{ steps.latest-ver.outputs.btd_ver }}
+    steps:
+      - uses: actions/checkout@v3.3.0
+
+      - name: Install Chromium
+        run: sudo apt-get install -y chromium-browser
+
+      - name: Get latest version
+        id: latest-ver
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          echo "otd_ver=$(gh release list -R "dimdenGD/OldTweetDeck" | head -n1 | awk -F' ' '{print $2}')" >> $GITHUB_OUTPUT
+          echo "btd_ver=$(gh release list -R "dimdenGD/BetterTweetDeck" | head -n1 | awk -F' ' '{print $4}' | sed -e 's/v//g')" >> $GITHUB_OUTPUT
+
+      - name: Update updates.xml
+        run: |
+          REPO_OTD=dimdenGD/OldTweetDeck
+          REPO_BTD=dimdenGD/BetterTweetDeck
+
+          cat <<EOF >updates.xml
+          <?xml version='1.0' encoding='UTF-8'?>
+          <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+            <app appid='jjeniamblhljemiaglpcedjpgebcflpp'>
+              <updatecheck codebase='https://github.com/misumisumi/OldTweetDeck-auto-update/releases/download/latest/OldTweetDeck_${{ steps.latest-ver.outputs.otd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.otd_ver }}' status='ok' />
+            </app>
+            <app appid='eeklgagcfgdmdppknipogbobjkdkcbhh'>
+              <updatecheck codebase='https://github.com/misumisumi/OldTweetDeck-auto-update/releases/download/latest/BetterTweetDeck_${{ steps.latest-ver.outputs.btd_ver }}_Chromium.crx' version='${{ steps.latest-ver.outputs.btd_ver }}' status='ok' />
+            </app>
+          </gupdate>
+          EOF
+
+      - name: Commit updates.xml
+        id: commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          file_pattern: "updates.xml"
+
+  pack-and-push-release:
+    runs-on: ubuntu-latest
+    needs: update-xml
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: Pack extensions
+        run: |
+          curl -LJO https://github.com/dimdenGD/OldTweetDeck/releases/download/v${{ needs.update-xml.outputs.otd_ver }}/OldTweetDeckChrome.zip
+          curl -LJO https://github.com/dimdenGD/BetterTweetDeck/releases/download/v${{ needs.update-xml.outputs.btd_ver }}/Chrome.zip
+          unzip OldTweetDeckChrome.zip -d OldTweetDeck_${{ needs.update-xml.outputs.otd_ver }}_Chromium
+          unzip Chrome.zip -d BetterTweetDeck_${{ needs.update-xml.outputs.btd_ver }}_Chromium
+          chromium --pack-extension=OldTweetDeck_${{ needs.update-xml.outputs.otd_ver }}_Chromium
+          chromium --pack-extension=BetterTweetDeck_${{ needs.update-xml.outputs.btd_ver }}_Chromium
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          artifacts: "OldTweetDeck_${{ needs.update-xml.outputs.otd_ver }}_Chromium.crx,BetterTweetDeck_${{ needs.update-xml.outputs.btd_ver }}_Chromium.crx"
