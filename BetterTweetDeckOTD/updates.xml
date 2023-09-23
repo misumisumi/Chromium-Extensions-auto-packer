@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-  <app appid='mbkealjjbgdefaeolfjpmohgkbejfnli'>
-      <updatecheck codebase='https://github.com/misumisumi/Chromium-Extensions-auto-packer/releases/download/v0.1.0/BetterTweetDeck_4.11.2_Chromium.crx' version='4.11.2' status='ok' />
+  <app appid='ajdlpmoffekghhblfajmiacgbdknmbpa'>
+    <updatecheck codebase='https://github.com/misumisumi/Chromium-Extensions-auto-packer/releases/download/v0.3.8/BetterTweetDeck_4.11.2_Chromium.crx' version='4.11.2' status='ok' />
   </app>
 </gupdate>
