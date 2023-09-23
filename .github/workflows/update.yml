@@ -2,7 +2,7 @@ name: Auto pack extensions and Publish release
 on:
   workflow_dispatch: # allows manual triggering
   schedule:
-    - cron: "0 4 * * *" # Runs every day at 04:00
+    - cron: "0 19 * * *" # Runs every day at 04:00
 
 jobs:
   pack-and-release:
@@ -108,7 +108,7 @@ jobs:
 
           ## Available Extensions
 
-          - [OldTweetDeck](https://github.com/dimdenGD/OldTweetDeck)-${{ steps.latest-ver.outputs.btd_ver }}
+          - [OldTweetDeck](https://github.com/dimdenGD/OldTweetDeck)-${{ steps.latest-ver.outputs.otd_ver }}
           - [BetterTweetDeck (OldTweetDeck-compatible)](https://github.com/dimdenGD/BetterTweetDeck/)-${{ steps.latest-ver.outputs.btd_ver }}
           EOF
 
