@@ -108,8 +108,8 @@ jobs:
 
           ## Available Extensions
 
-          - [OldTweetDeck](https://github.com/dimdenGD/OldTweetDeck)-${{ steps.latest-ver.outputs.otd_ver }}
-          - [BetterTweetDeck (OldTweetDeck-compatible)](https://github.com/dimdenGD/BetterTweetDeck/)-${{ steps.latest-ver.outputs.btd_ver }}
+          - [BetterTweetDeck (OldTweetDeck-compatible)](https://github.com/dimdenGD/BetterTweetDeck/)-${{ needs.pack-and-release.outputs.btd_ver }}
+          - [OldTweetDeck](https://github.com/dimdenGD/OldTweetDeck)-${{ needs.pack-and-release.outputs.otd_ver }}
           EOF
 
       - name: Commit
