@@ -11,6 +11,7 @@ jobs:
       otd_ver: ${{ steps.latest-ver.outputs.otd_ver }}
       btd_ver: ${{ steps.latest-ver.outputs.btd_ver }}
       tag: ${{ steps.tag_version.outputs.new_tag }}
+      need_update: ${{ steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver }}
     steps:
       - uses: actions/checkout@v3.3.0
 
@@ -19,17 +20,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          echo "otd_ver=$(gh release list -R "dimdenGD/OldTweetDeck" | head -n1 | awk -F' ' '{print $2}')" >> $GITHUB_OUTPUT
           echo "btd_ver=$(gh release list -R "dimdenGD/BetterTweetDeck" | head -n1 | awk -F' ' '{print $4}' | sed -e 's/v//g')" >> $GITHUB_OUTPUT
+          echo "otd_ver=$(gh release list -R "dimdenGD/OldTweetDeck" | head -n1 | awk -F' ' '{print $2}')" >> $GITHUB_OUTPUT
+          echo "now_btd_ver=$(gh release view --json 'assets' -q '.[].[] | .name' | grep BetterTweetDeck | awk -F'_' '{print $2}')" >> $GITHUB_OUTPUT
+          echo "now_otd_ver=$(gh release view --json 'assets' -q '.[].[] | .name' | grep OldTweetDeck | awk -F'_' '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
+        if: steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: "minor"
 
       - name: Save the sercret file
+        if: steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver
         run: |
           echo '${BTD_SECRET}' > temp_btd.pem
           echo '${OTD_SECRET}' > temp_otd.pem
@@ -40,6 +45,7 @@ jobs:
           OTD_SECRET: ${{ secrets.OLDTWEETDECKPEM }}
 
       - name: Pack extensions
+        if: steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver
         run: |
           curl -LJO https://github.com/dimdenGD/BetterTweetDeck/releases/download/v${{ steps.latest-ver.outputs.btd_ver }}/Chrome.zip
           curl -LJO https://github.com/dimdenGD/OldTweetDeck/releases/download/v${{ steps.latest-ver.outputs.otd_ver }}/OldTweetDeckChrome.zip
@@ -62,6 +68,7 @@ jobs:
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
+        if: steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
@@ -75,6 +82,7 @@ jobs:
       - uses: actions/checkout@v3.3.0
 
       - name: Update updates.xml
+        if: needs.pack-and-release.outputs.need_update
         run: |
           REPO_OTD=dimdenGD/OldTweetDeck
           REPO_BTD=dimdenGD/BetterTweetDeck
@@ -98,6 +106,7 @@ jobs:
           EOF
 
       - name: Update README.md
+        if: needs.pack-and-release.outputs.need_update
         run: |
           cat <<EOF >README.md
           # Chromium extensions auto packer
@@ -113,6 +122,7 @@ jobs:
           EOF
 
       - name: Commit
+        if: needs.pack-and-release.outputs.need_update
         id: commit
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
