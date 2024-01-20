@@ -63,8 +63,8 @@ jobs:
           cat manifest_tmp.json | jq '.+ {"update_url": "https://raw.githubusercontent.com/misumisumi/Chromium-Extensions-auto-packer/main/OldTweetDeck/updates.xml"}' > manifest.json
           popd
 
-          chromium --pack-extension=BetterTweetDeck_${{ steps.latest-ver.outputs.btd_ver }}_Chromium --pack-extension-key=BTD.pem
-          chromium --pack-extension=OldTweetDeck_${{ steps.latest-ver.outputs.otd_ver }}_Chromium --pack-extension-key=OTD.pem
+          google-chrome --pack-extension=BetterTweetDeck_${{ steps.latest-ver.outputs.btd_ver }}_Chromium --pack-extension-key=BTD.pem
+          google-chrome --pack-extension=OldTweetDeck_${{ steps.latest-ver.outputs.otd_ver }}_Chromium --pack-extension-key=OTD.pem
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
