@@ -7,4 +7,4 @@ Automatically keep up with the latest version.
 ## Available Extensions
 
 - [BetterTweetDeck (OldTweetDeck-compatible)](https://github.com/dimdenGD/BetterTweetDeck/)-4.11.2
-- [OldTweetDeck](https://github.com/dimdenGD/OldTweetDeck)-3.2.1
+- [OldTweetDeck](https://github.com/dimdenGD/OldTweetDeck)-3.2.3
