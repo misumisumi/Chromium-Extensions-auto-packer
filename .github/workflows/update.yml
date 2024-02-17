@@ -2,7 +2,7 @@ name: Auto pack extensions and Publish release
 on:
   workflow_dispatch: # allows manual triggering
   schedule:
-    - cron: "0 19 * * *" # Runs every day at 04:00
+    - cron: "0 * * * *" # Runs every day at 04:00
 
 jobs:
   pack-and-release:
