@@ -2,7 +2,7 @@ name: Auto pack extensions and Publish release
 on:
   workflow_dispatch: # allows manual triggering
   schedule:
-    - cron: "0 * * * *" # Runs every day at 04:00
+    - cron: "0 * * * *" # Runs every hour
 
 jobs:
   pack-and-release:
@@ -75,14 +75,18 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
           artifacts: "OldTweetDeck_${{ steps.latest-ver.outputs.otd_ver }}_Chromium.crx,BetterTweetDeck_${{ steps.latest-ver.outputs.btd_ver }}_Chromium.crx"
 
+      - name: Check env
+        run: |
+          echo need_update=${{ steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver }}
+
   update-xml:
     runs-on: ubuntu-latest
     needs: pack-and-release
+    if: needs.pack-and-release.outputs.need_update == 'true'
     steps:
       - uses: actions/checkout@v4
 
       - name: Update updates.xml
-        if: needs.pack-and-release.outputs.need_update
         run: |
           REPO_OTD=dimdenGD/OldTweetDeck
           REPO_BTD=dimdenGD/BetterTweetDeck
@@ -106,7 +110,6 @@ jobs:
           EOF
 
       - name: Update README.md
-        if: needs.pack-and-release.outputs.need_update
         run: |
           cat <<EOF >README.md
           # Chromium extensions auto packer
@@ -122,7 +125,6 @@ jobs:
           EOF
 
       - name: Commit
-        if: needs.pack-and-release.outputs.need_update
         id: commit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
