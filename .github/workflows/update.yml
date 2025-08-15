@@ -13,7 +13,7 @@ jobs:
       tag: ${{ steps.tag_version.outputs.new_tag }}
       need_update: ${{ steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Get latest version
         id: latest-ver
@@ -84,7 +84,7 @@ jobs:
     needs: pack-and-release
     if: needs.pack-and-release.outputs.need_update == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Update updates.xml
         run: |
