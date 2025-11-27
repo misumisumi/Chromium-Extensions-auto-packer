@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
   <app appid='bjcdldglejahkljjcjhpdclapfpiphhf'>
-    <updatecheck codebase='https://github.com/misumisumi/Chromium-Extensions-auto-packer/releases/download/v0.47.0/OldTweetDeck_4.3.7_Chromium.crx' version='4.3.7' status='ok' />
+    <updatecheck codebase='https://github.com/misumisumi/Chromium-Extensions-auto-packer/releases/download/v0.48.0/OldTweetDeck_4.3.8_Chromium.crx' version='4.3.8' status='ok' />
   </app>
 </gupdate>
