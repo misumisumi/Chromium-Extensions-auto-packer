@@ -27,7 +27,7 @@ jobs:
 
       - name: Bump version and push tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
+        uses: mathieudutour/github-tag-action@v7
         if: steps.latest-ver.outputs.btd_ver != steps.latest-ver.outputs.now_btd_ver || steps.latest-ver.outputs.otd_ver != steps.latest-ver.outputs.now_otd_ver
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
